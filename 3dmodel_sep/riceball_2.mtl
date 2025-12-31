@@ -1,0 +1,16 @@
+# Blender 4.5.0 MTL File: 'None'
+# www.blender.org
+
+newmtl tripo_mat_6b3aaeaa-3141-42f7-b658-6aa70eefa4f4
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd riceball_2 (1).JPEG
+map_Ns riceball_2 (2).JPEG
+map_Pr riceball_2 (2).JPEG
+map_refl riceball_2 (3).JPEG
+map_Pm riceball_2 (3).JPEG
+map_Bump -bm 1.000000 riceball_2 (4).JPEG
