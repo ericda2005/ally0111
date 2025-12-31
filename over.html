@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>遊戲結束 - 接飯糰大作戰</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "kitchen-blue-light": "#E0F7FA",
+                        "kitchen-blue": "#B2EBF2",
+                        "kitchen-floor": "#E0F2F1",
+                        "kitchen-cabinet": "#A5D6A7",
+                        "kitchen-primary": "#FF7E36",
+                        "kitchen-secondary": "#8BC34A",
+                        "kitchen-accent": "#E53935",
+                        "kitchen-wall": "#B3E5FC",
+                        "kitchen-wood": "#D7CCC8",
+                        "kitchen-cream": "#FFF9C4",
+                        "surface": "#ffffff",
+                        "kid-orange": "#FFB74D",
+                        "kid-brown": "#5D4037",
+                        "kid-text-outline": "#795548",
+                    },
+                    fontFamily: {
+                        "display": ["Fredoka", "Zen Maru Gothic", "sans-serif"],
+                        "body": ["Fredoka", "Zen Maru Gothic", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "3xl": "3rem",
+                        "blob": "40% 60% 70% 30% / 40% 50% 60% 50%"
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'bounce-sm': 'bounce-sm 2s infinite',
+                        'pop': 'pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        'bounce-sm': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.5)', opacity: '0' },
+                            '60%': { transform: 'scale(1.3)', opacity: '1' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&amp;family=Zen+Maru+Gothic:wght@500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Fredoka", "Zen Maru Gothic", sans-serif;
+        }
+
+        .text-stroke-brown {
+            -webkit-text-stroke: 4px #5D4037;
+            paint-order: stroke fill;
+        }
+
+        .text-stroke-white {
+            -webkit-text-stroke: 4px #ffffff;
+            paint-order: stroke fill;
+        }
+
+        .cartoon-border {
+            border: 3px solid #5D4037;
+            box-shadow: 0 4px 0 #5D4037;
+        }
+
+        .kitchen-stripe {
+            background: repeating-linear-gradient(90deg,
+                    #E0F7FA,
+                    #E0F7FA 40px,
+                    #B2EBF2 40px,
+                    #B2EBF2 80px);
+        }
+
+        .kitchen-floor-pattern {
+            background-image:
+                linear-gradient(45deg, #B2DFDB 25%, transparent 25%, transparent 75%, #B2DFDB 75%, #B2DFDB),
+                linear-gradient(45deg, #B2DFDB 25%, transparent 25%, transparent 75%, #B2DFDB 75%, #B2DFDB);
+            background-color: #E0F2F1;
+            background-position: 0 0, 20px 20px;
+            background-size: 40px 40px;
+            opacity: 0.3;
+        }
+
+        /* Glass panel style from original but updated */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 4px solid #fff;
+            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-kitchen-blue-light overflow-hidden select-none text-kid-brown">
+    <div class="relative h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center">
+        <!-- Background Elements Start -->
+        <div class="absolute inset-0 z-0 kitchen-stripe opacity-60"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-[35%] z-0 kitchen-floor-pattern border-t-8 border-white/50">
+        </div>
+        <div
+            class="absolute top-[15%] left-[-20px] w-48 h-4 bg-[#FFCC80] border-b-4 border-[#EF6C00] rounded-r-lg z-0 rotate-3 cartoon-border">
+            <span class="absolute -top-10 left-8 text-[40px]">🍅</span>
+            <span class="absolute -top-9 left-24 text-[35px]">🍄</span>
+        </div>
+        <div
+            class="absolute top-[20%] right-[-30px] w-40 h-4 bg-[#FFCC80] border-b-4 border-[#EF6C00] rounded-l-lg z-0 -rotate-2 cartoon-border">
+            <span class="absolute -top-10 right-16 text-[40px] rotate-45">🥕</span>
+        </div>
+        <!-- Background Elements End -->
+
+        <!-- Game Over Card -->
+        <div
+            class="glass-panel w-[90%] max-w-sm mx-auto h-auto rounded-3xl flex flex-col items-center p-6 relative z-10 animate-pop border-4 border-white/90">
+
+            <div class="w-full flex flex-col items-center -mt-8 mb-2">
+                <h1
+                    class="text-6xl font-black text-kid-orange text-stroke-brown tracking-wider mb-2 rotate-[-2deg] drop-shadow-md">
+                    遊戲結束！
+                </h1>
+
+                <!-- 3D Model Container -->
+                <div class="relative w-full flex flex-col items-center justify-center mb-4">
+                    <div id="model-container" class="w-[220px] h-[180px] flex items-center justify-center">
+                        <!-- 3D Canvas will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Score Section -->
+                <div
+                    class="bg-white/80 rounded-2xl px-6 py-2 border-[3px] border-kid-brown shadow-sm transform rotate-1 mb-2">
+                    <p class="text-kid-brown text-lg font-bold text-center">本次得分</p>
+                </div>
+                <!-- Static Score for now, ideally passed via URL params -->
+                <h2 id="final-score"
+                    class="text-7xl font-black leading-none text-center text-kitchen-primary text-stroke-brown drop-shadow-sm mb-3 tracking-tighter">
+                    0
+                </h2>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="w-full grid grid-cols-2 gap-3 mb-6 px-2">
+                <div
+                    class="flex flex-col items-center justify-center gap-1 rounded-2xl p-2 bg-kitchen-cream border-2 border-[#FDD835] shadow-sm">
+                    <div class="flex items-center gap-1 text-[#FBC02D] mb-1">
+                        <span class="material-symbols-outlined text-[28px]"
+                            style="font-variation-settings: 'FILL' 1;">rice_bowl</span>
+                    </div>
+                    <p class="text-kid-brown text-xs font-bold">接住飯糰</p>
+                    <p id="caught-count" class="text-[#F57F17] tracking-tight text-2xl font-black">0</p>
+                </div>
+                <div
+                    class="flex flex-col items-center justify-center gap-1 rounded-2xl p-2 bg-[#E1F5FE] border-2 border-[#81D4FA] shadow-sm">
+                    <div class="flex items-center gap-1 text-[#039BE5] mb-1">
+                        <span class="material-symbols-outlined text-[28px]"
+                            style="font-variation-settings: 'FILL' 1;">bolt</span>
+                    </div>
+                    <p class="text-kid-brown text-xs font-bold">連擊次數</p>
+                    <p id="combo-count" class="text-[#0277BD] tracking-tight text-2xl font-black">0x</p>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="w-full flex gap-3 mt-auto pb-2 justify-center">
+                <button onclick="window.location.href='playing.html'"
+                    class="group flex-1 flex items-center justify-center gap-2 rounded-2xl bg-kitchen-secondary border-[3px] border-[#558B2F] h-16 px-2 transition-all hover:brightness-110 active:translate-y-[4px] active:shadow-none shadow-[0_4px_0_#558B2F]">
+                    <span
+                        class="material-symbols-outlined text-white text-3xl group-hover:rotate-180 transition-transform duration-500 drop-shadow-sm font-bold"
+                        style="font-variation-settings: 'wght' 700;">replay</span>
+                    <span class="text-white text-xl font-black tracking-wide drop-shadow-md text-stroke-brown"
+                        style="-webkit-text-stroke: 0px;">再玩一次</span>
+                </button>
+                <button onclick="window.location.href='start.html'"
+                    class="group flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[#FF7043] border-[3px] border-[#BF360C] h-16 px-2 transition-all hover:brightness-110 active:translate-y-[4px] active:shadow-none shadow-[0_4px_0_#BF360C]">
+                    <span class="material-symbols-outlined text-white text-3xl drop-shadow-sm font-bold"
+                        style="font-variation-settings: 'wght' 700;">home</span>
+                    <span class="text-white text-xl font-black tracking-wide drop-shadow-md"
+                        style="-webkit-text-stroke: 0px;">回主畫面</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js Logic -->
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+          }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+        import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
+        const container = document.getElementById('model-container');
+
+        // Scene setup
+        const scene = new THREE.Scene();
+
+        // Camera setup
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 2, 14); // Closer for the card view
+        camera.lookAt(0, 0, 0);
+
+        // Renderer setup
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // Lighting
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 3.0);
+        hemiLight.position.set(0, 20, 0);
+        scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 2.0);
+        dirLight.position.set(10, 10, 10);
+        scene.add(dirLight);
+
+        // Model Group
+        const modelGroup = new THREE.Group();
+        scene.add(modelGroup);
+
+        // Load Model (MTL + OBJ)
+        const mtlLoader = new MTLLoader();
+        const objLoader = new OBJLoader();
+        const clock = new THREE.Clock();
+
+        mtlLoader.setPath('./3dmodel_sep/');
+        objLoader.setPath('./3dmodel_sep/');
+
+        mtlLoader.load('riceball_main.mtl', (materials) => {
+            materials.preload();
+            objLoader.setMaterials(materials);
+
+            objLoader.load('riceball_main.obj', (object) => {
+                const box = new THREE.Box3().setFromObject(object);
+                const size = box.getSize(new THREE.Vector3());
+                const center = box.getCenter(new THREE.Vector3());
+
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 8 / maxDim; // Smaller scale for the card
+                object.scale.set(scale, scale, scale);
+
+                // Re-center
+                object.position.x = -center.x * scale;
+                object.position.y = -center.y * scale - 1; // Slight offset adjustment
+                object.position.z = -center.z * scale;
+
+                modelGroup.add(object);
+
+                // Face camera
+                modelGroup.rotation.y = Math.PI / 6; // Slight angle
+
+                // No Animation for OBJ
+            }, undefined, (error) => {
+                console.error(error);
+            });
+        });
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            // OBJ has no mixer, removed
+
+
+            // Slow idle rotation
+            if (modelGroup) {
+                modelGroup.rotation.y += 0.005;
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize handle
+        window.addEventListener('resize', () => {
+            // Since container is fixed size or flex, we might not need complex resize logic
+            // But good to have if layout shifts
+            if (container.clientWidth && container.clientHeight) {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        });
+
+        // Parse Score from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const score = urlParams.get('score');
+        const caught = urlParams.get('caught');
+        const combo = urlParams.get('combo');
+
+        if (score) {
+            document.getElementById('final-score').innerText = parseInt(score).toLocaleString();
+        }
+        if (caught) {
+            document.getElementById('caught-count').innerText = caught;
+        }
+        if (combo) {
+            document.getElementById('combo-count').innerText = combo + 'x';
+        }
+    </script>
+</body>
+
+</html>
+```
