@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VR Rice Ball Game HUD - Kids Theme</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "kitchen-blue-light": "#E0F7FA",
+                        "kitchen-blue": "#B2EBF2",
+                        "kitchen-floor": "#E0F2F1",
+                        "kitchen-cabinet": "#A5D6A7",
+                        "kitchen-primary": "#FF7E36",
+                        "kitchen-secondary": "#8BC34A",
+                        "kitchen-accent": "#E53935",
+                        "kitchen-wall": "#B3E5FC",
+                        "kitchen-wood": "#D7CCC8",
+                        "kitchen-cream": "#FFF9C4",
+                        "surface": "#ffffff",
+                        "kid-orange": "#FFB74D",
+                        "kid-brown": "#5D4037",
+                        "kid-text-outline": "#795548",
+                    },
+                    fontFamily: {
+                        "display": ["Fredoka", "Zen Maru Gothic", "sans-serif"],
+                        "body": ["Fredoka", "Zen Maru Gothic", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "3xl": "3rem",
+                        "blob": "40% 60% 70% 30% / 40% 50% 60% 50%"
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'fall': 'fall 4s linear infinite',
+                        'pop': 'pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                        'bounce-sm': 'bounce-sm 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fall: {
+                            '0%': { transform: 'translateY(-10vh) rotate(0deg)' },
+                            '100%': { transform: 'translateY(110vh) rotate(360deg)' },
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.5)', opacity: '0' },
+                            '60%': { transform: 'scale(1.3)', opacity: '1' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        'bounce-sm': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&amp;family=Zen+Maru+Gothic:wght@500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Fredoka", "Zen Maru Gothic", sans-serif;
+        }
+
+        .text-stroke-brown {
+            -webkit-text-stroke: 4px #5D4037;
+            paint-order: stroke fill;
+        }
+
+        .text-stroke-white {
+            -webkit-text-stroke: 4px #ffffff;
+            paint-order: stroke fill;
+        }
+
+        .cartoon-border {
+            border: 3px solid #5D4037;
+            box-shadow: 0 4px 0 #5D4037;
+        }
+
+        .cartoon-border-light {
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .kitchen-stripe {
+            background: repeating-linear-gradient(90deg,
+                    #E0F7FA,
+                    #E0F7FA 40px,
+                    #B2EBF2 40px,
+                    #B2EBF2 80px);
+        }
+
+        .kitchen-floor-pattern {
+            background-image:
+                linear-gradient(45deg, #B2DFDB 25%, transparent 25%, transparent 75%, #B2DFDB 75%, #B2DFDB),
+                linear-gradient(45deg, #B2DFDB 25%, transparent 25%, transparent 75%, #B2DFDB 75%, #B2DFDB);
+            background-color: #E0F2F1;
+            background-position: 0 0, 20px 20px;
+            background-size: 40px 40px;
+            opacity: 0.3;
+        }
+
+        /* Combo Popup Animation */
+        @keyframes fadeUpScale {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 0) scale(0.5);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -20px) scale(1.2);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50px) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -80px) scale(0.8);
+            }
+        }
+
+        .combo-popup {
+            position: absolute;
+            pointer-events: none;
+            animation: fadeUpScale 1.5s forwards;
+            text-align: center;
+            z-index: 50;
+            text-shadow: 2px 2px 0px #fff;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-kitchen-blue-light overflow-hidden select-none text-slate-800">
+    <div class="relative h-[100dvh] w-full overflow-hidden flex flex-col">
+        <div class="absolute inset-0 z-0 kitchen-stripe opacity-60"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-[35%] z-0 kitchen-floor-pattern border-t-8 border-white/50">
+        </div>
+        <div
+            class="absolute top-[15%] left-[-20px] w-48 h-4 bg-[#FFCC80] border-b-4 border-[#EF6C00] rounded-r-lg z-0 rotate-3 shadow-cartoon">
+            <span class="absolute -top-10 left-8 text-[40px]">🍅</span>
+            <span class="absolute -top-9 left-24 text-[35px]">🍄</span>
+        </div>
+        <div
+            class="absolute top-[20%] right-[-30px] w-40 h-4 bg-[#FFCC80] border-b-4 border-[#EF6C00] rounded-l-lg z-0 -rotate-2 shadow-cartoon">
+            <span class="absolute -top-10 right-16 text-[40px] rotate-45">🥕</span>
+        </div>
+
+        <div class="absolute left-1/4 top-0 z-10 animate-[fall_4s_linear_infinite] hidden">
+            <!-- Hidden original falling item -->
+        </div>
+        <div class="absolute left-2/3 -top-20 z-10 animate-[fall_3s_linear_infinite_1s] hidden">
+            <!-- Hidden original falling item -->
+        </div>
+
+        <!-- 3D Game Scene -->
+        <div id="game-scene-container" class="absolute inset-0 z-10"></div>
+
+        <script type="importmap">
+          {
+            "imports": {
+              "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+              "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+          }
+        </script>
+        <script type="module">
+            import * as THREE from 'three';
+            import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+            import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
+            let charGroup; // Global variable
+            const container = document.getElementById('game-scene-container');
+
+            // Scene
+            const scene = new THREE.Scene();
+
+            // Camera
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 25);
+
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 3.0);
+            hemiLight.position.set(0, 20, 0);
+            scene.add(hemiLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 2.0);
+            dirLight.position.set(10, 10, 10);
+            scene.add(dirLight);
+
+            // 1. Load Catcher Character (MTL + OBJ)
+            // Use local loader instances to avoid race conditions with falling items
+            {
+                const mtlLoader = new MTLLoader();
+                const objLoader = new OBJLoader();
+                mtlLoader.setPath('./3dmodel_sep/');
+                objLoader.setPath('./3dmodel_sep/');
+
+                mtlLoader.load('riceball_main.mtl', (materials) => {
+                    materials.preload();
+                    objLoader.setMaterials(materials);
+
+                    objLoader.load('riceball_main.obj', (object) => {
+                        const box = new THREE.Box3().setFromObject(object);
+                        const size = box.getSize(new THREE.Vector3());
+                        const center = box.getCenter(new THREE.Vector3());
+                        const maxDim = Math.max(size.x, size.y, size.z);
+                        // Responsive Scale: 7 for mobile, 10 for desktop
+                        const isMobile = window.innerWidth < 768;
+                        const baseScale = isMobile ? 7 : 10;
+                        const scale = baseScale / maxDim;
+
+                        object.scale.set(scale, scale, scale);
+
+                        // Center pivot
+                        object.position.x = -center.x * scale;
+                        object.position.y = -center.y * scale;
+                        object.position.z = -center.z * scale;
+
+                        // Create a group for positioning the character in the scene
+                        charGroup = new THREE.Group();
+                        charGroup.add(object);
+
+                        // Position at bottom center
+                        charGroup.position.set(0, -7, 0);
+
+                        // Face Camera
+                        charGroup.rotation.y = 3 * Math.PI / 4;
+
+                        scene.add(charGroup);
+
+                        // Movement Logic
+                        const planeWidth = 25; // Playable width
+                        let lastNormalizedX = 0.5;
+
+                        function updateCharacterPosition(normalizedX) {
+                            // normalizedX 0..1 -> -0.5..0.5 -> scale by width
+                            const targetX = (normalizedX - 0.5) * planeWidth;
+                            charGroup.position.x = targetX;
+
+                            // Rotation based on movement direction
+                            // Moving Left
+                            if (normalizedX < lastNormalizedX) {
+                                charGroup.rotation.y = 3 * Math.PI / 4;
+                            }
+                            // Moving Right
+                            else if (normalizedX > lastNormalizedX) {
+                                charGroup.rotation.y = Math.PI / 4;
+                            }
+
+                            lastNormalizedX = normalizedX;
+                        }
+
+                        // Mouse Move
+                        window.addEventListener('mousemove', (e) => {
+                            const normalizedX = e.clientX / window.innerWidth;
+                            updateCharacterPosition(normalizedX);
+                        });
+
+                        // Touch Move
+                        window.addEventListener('touchmove', (e) => {
+                            if (e.touches.length > 0) {
+                                const normalizedX = e.touches[0].clientX / window.innerWidth;
+                                updateCharacterPosition(normalizedX);
+                            }
+                        });
+                    }, (xhr) => {
+                        console.log((xhr.loaded / xhr.total * 100) + '% loaded main char');
+                    }, (error) => {
+                        console.error('An error happened', error);
+                    });
+                });
+            }
+
+            // 2. Falling Items Logic (MTL + OBJ)
+            const fallingItems = [];
+            const loadedPrefabs = [];
+
+            // Load all 4 variations (Filenames only)
+            const fallingFiles = [
+                { mtl: 'riceball_1.mtl', obj: 'riceball_1.obj' },
+                { mtl: 'riceball_2.mtl', obj: 'riceball_2.obj' },
+                { mtl: 'riceball_3.mtl', obj: 'riceball_3.obj' },
+                { mtl: 'riceball_4.mtl', obj: 'riceball_4.obj' }
+            ];
+
+            // 0. Difficulty Setting
+            const urlParams = new URLSearchParams(window.location.search);
+            const difficulty = urlParams.get('difficulty') || 'experience'; // 'experience' or 'challenge'
+            const isChallenge = difficulty === 'challenge';
+
+            // Constants based on difficulty
+            // Experience: Scale 3/maxDim, Speed 0.1-0.18, Interval 1.5s, Max 2
+            // Challenge: Scale 2/maxDim, Speed 0.1-0.23, Interval 0.5s, Max 3
+
+            const fallingScale = isChallenge ? 2 : 3;
+            const maxFallingItems = isChallenge ? 3 : 2;
+            const spawnIntervalTime = isChallenge ? 500 : 1500;
+
+            fallingFiles.forEach((fileInfo) => {
+                // IMPORTANT: Create FRESH loaders for EACH iteration
+                // to prevent race conditions where setMaterials overwrites others
+                const mtlLoader = new MTLLoader();
+                const objLoader = new OBJLoader();
+
+                mtlLoader.setPath('./3dmodel_sep/');
+                objLoader.setPath('./3dmodel_sep/');
+
+                mtlLoader.load(fileInfo.mtl, (materials) => {
+                    materials.preload();
+                    objLoader.setMaterials(materials);
+
+                    objLoader.load(fileInfo.obj, (object) => {
+                        const box = new THREE.Box3().setFromObject(object);
+                        const size = box.getSize(new THREE.Vector3());
+                        const maxDim = Math.max(size.x, size.y, size.z);
+                        const scale = fallingScale / maxDim; // Dynamic scale
+                        object.scale.set(scale, scale, scale);
+
+                        // Center local
+                        const center = box.getCenter(new THREE.Vector3());
+                        object.position.x = -center.x * scale;
+                        object.position.y = -center.y * scale;
+                        object.position.z = -center.z * scale;
+
+                        // Create wrapper
+                        const wrapper = new THREE.Group();
+                        wrapper.add(object);
+
+                        loadedPrefabs.push(wrapper);
+                    }, (xhr) => {
+                        // obj progress
+                    }, (error) => {
+                        console.error('Error loading falling obj', error);
+                    });
+                });
+            });
+
+            function spawnFallingItem() {
+                if (loadedPrefabs.length === 0) return;
+
+                const prefab = loadedPrefabs[Math.floor(Math.random() * loadedPrefabs.length)];
+                const item = prefab.clone();
+
+                // Random X position
+                const xPos = (Math.random() - 0.5) * 16;
+                item.position.set(xPos, 15, 0);
+
+                // Random Rotation
+                item.rotation.z = Math.random() * Math.PI;
+                item.rotation.x = Math.random() * Math.PI;
+
+                scene.add(item);
+
+                // Speed Logic
+                let baseSpeed = 0.1;
+                let randSpeed = 0.08;
+
+                if (isChallenge) {
+                    baseSpeed = 0.1;
+                    randSpeed = 0.13;
+                }
+
+                fallingItems.push({
+                    mesh: item,
+                    speed: baseSpeed + Math.random() * randSpeed,
+                    rotSpeedX: (Math.random() - 0.5) * 0.05,
+                    rotSpeedZ: (Math.random() - 0.5) * 0.05
+                });
+            }
+
+            let score = 0;
+            let caughtCount = 0;
+            let currentCombo = 0;
+            let maxCombo = 0;
+            let timeLeft = 30;
+            const scoreDisplay = document.getElementById('score-display');
+            const timerDisplay = document.getElementById('timer-display');
+            const scoreSound = document.getElementById('score-sound');
+
+            // Timer
+            const timerRing = document.getElementById('timer-ring');
+            const totalTime = 30;
+
+            // Pause State
+            let isPaused = false;
+            const pauseOverlay = document.getElementById('pause-overlay');
+
+            const timerInterval = setInterval(() => {
+                if (isPaused) return;
+
+                timeLeft--;
+                timerDisplay.innerText = timeLeft;
+
+                // Update ring stroke-dasharray (100 is full circumference)
+                // We want it to go from 100 down to 0
+                const dashValue = (timeLeft / totalTime) * 100;
+                timerRing.setAttribute('stroke-dasharray', `${dashValue}, 100`);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    window.location.href = `over.html?score=${score}&caught=${caughtCount}&combo=${maxCombo}`;
+                }
+            }, 1000);
+
+            // Pause Button Logic
+            document.getElementById('pause-btn').addEventListener('click', () => {
+                isPaused = true;
+                pauseOverlay.classList.remove('hidden');
+            });
+
+            // Resume Button Logic
+            document.getElementById('resume-btn').addEventListener('click', () => {
+                isPaused = false;
+                pauseOverlay.classList.add('hidden');
+            });
+
+            let lastSpawnTime = 0;
+            const minSpawnInterval = 1500; // Minimum 1.5s between spawns
+
+            // Helper function for Combo Popup
+            function showComboPopup(x, y, combo, scoreAmt) {
+                const el = document.createElement('div');
+                el.className = 'combo-popup';
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+
+                // Content
+                el.innerHTML = `
+                    <div class="text-3xl font-black text-[#FF3D00] leading-none" style="-webkit-text-stroke: 1px white;">${combo} COMBO</div>
+                    <div class="text-2xl font-bold text-[#FF9100]">+${scoreAmt}</div>
+                `;
+
+                document.body.appendChild(el);
+
+                // Cleanup
+                setTimeout(() => {
+                    el.remove();
+                }, 1500);
+            }
+
+            // Animation Loop
+            function animate(time) {
+                requestAnimationFrame(animate);
+
+                if (isPaused) {
+                    lastSpawnTime = time - (lastSpawnTime - time);
+                    renderer.render(scene, camera);
+                    return;
+                }
+
+                // Conditions:
+                // 1. Max items based on difficulty (maxFallingItems)
+                // 2. Interval based on difficulty (spawnIntervalTime)
+                // 3. Random chance
+                if (fallingItems.length < maxFallingItems &&
+                    time - lastSpawnTime > spawnIntervalTime &&
+                    Math.random() < 0.05) { // Keep randomness check for jitter
+
+                    spawnFallingItem();
+                    lastSpawnTime = time;
+                }
+
+                // Catcher position for collision
+                if (charGroup) {
+                    const charX = charGroup.position.x;
+                    const charY = charGroup.position.y;
+
+                    for (let i = fallingItems.length - 1; i >= 0; i--) {
+                        const item = fallingItems[i];
+                        item.mesh.position.y -= item.speed;
+                        item.mesh.rotation.x += item.rotSpeedX;
+                        item.mesh.rotation.z += item.rotSpeedZ;
+
+                        // Collision Detection
+                        if (Math.abs(item.mesh.position.y - charY) < 3) {
+                            if (Math.abs(item.mesh.position.x - charX) < 4) {
+                                // HIT!
+                                caughtCount++;
+
+                                // Combo Logic
+                                currentCombo++;
+                                if (currentCombo > maxCombo) {
+                                    maxCombo = currentCombo;
+                                }
+
+                                // Score with Bonus
+                                const bonus = (currentCombo - 1) * 50;
+                                const totalHitScore = 100 + bonus;
+                                score += totalHitScore;
+
+                                scoreDisplay.innerText = score;
+                                scoreSound.currentTime = 0;
+                                scoreSound.play().catch(e => console.log('Audio play failed', e));
+
+                                // Visual Combo Effect
+                                if (currentCombo > 0) {
+                                    // Calculate screen X
+                                    const normX = (charGroup.position.x / 25) + 0.5;
+                                    const screenX = normX * window.innerWidth;
+                                    const screenY = window.innerHeight * 0.7;
+
+                                    showComboPopup(screenX, screenY, currentCombo, totalHitScore);
+                                }
+
+                                // Remove item
+                                scene.remove(item.mesh);
+                                fallingItems.splice(i, 1);
+                                continue;
+                            }
+                        }
+
+                        // Missed Item
+                        if (item.mesh.position.y < -15) {
+                            // Reset Combo
+                            currentCombo = 0;
+
+                            scene.remove(item.mesh);
+                            fallingItems.splice(i, 1);
+                        }
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        </script>
+
+        <div class="relative z-20 flex h-full flex-col justify-between p-4 safe-area-inset">
+            <div class="flex w-full items-start justify-between mt-2">
+                <div class="flex flex-col gap-3">
+                    <div
+                        class="group relative flex h-20 min-w-[200px] items-center rounded-3xl bg-[#FFF3E0] cartoon-border px-2 pr-6 transition-transform hover:scale-105">
+                        <div
+                            class="absolute -left-2 top-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full bg-kitchen-primary border-[3px] border-[#5D4037] shadow-[0_2px_0_rgba(0,0,0,0.2)] text-white z-10">
+                            <span class="material-symbols-outlined text-[32px] drop-shadow-sm">star</span>
+                        </div>
+                        <div class="flex flex-col justify-center pl-12 w-full">
+                            <span class="text-xs font-black text-[#5D4037] tracking-wider mb-0.5">SCORE</span>
+                            <span id="score-display"
+                                class="text-3xl font-black leading-none text-kitchen-primary text-stroke-brown tracking-wide drop-shadow-sm">0</span>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Audio for scoring -->
+                <audio id="score-sound" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
+
+                <div class="absolute left-1/2 top-2 -translate-x-1/2 transform">
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="relative flex items-center justify-center bg-white rounded-full p-1.5 cartoon-border shadow-lg">
+                            <svg class="h-24 w-24 -rotate-90 transform" viewBox="0 0 36 36">
+                                <path class="text-gray-200"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="#FFF9C4" stroke="currentColor" stroke-width="4"></path>
+                                <path id="timer-ring"
+                                    class="text-kitchen-accent drop-shadow-md transition-all duration-1000 ease-linear"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-linecap="round"
+                                    stroke-width="4"></path>
+                            </svg>
+                            <div class="absolute flex flex-col items-center justify-center pb-1">
+                                <span id="timer-display"
+                                    class="text-4xl font-black text-[#5D4037] leading-none tracking-tight">30</span>
+                                <span
+                                    class="text-[10px] font-bold text-kitchen-accent tracking-widest mt-[-2px]">SEC</span>
+                            </div>
+                            <div
+                                class="absolute -top-3 -left-1 w-6 h-6 bg-white rounded-full border-2 border-[#5D4037] -z-10">
+                            </div>
+                            <div
+                                class="absolute -top-3 -right-1 w-6 h-6 bg-white rounded-full border-2 border-[#5D4037] -z-10">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="pause-btn"
+                    class="group flex h-16 w-16 items-center justify-center rounded-2xl bg-white cartoon-border text-kitchen-secondary transition-all hover:bg-kitchen-secondary hover:text-white active:translate-y-1 active:shadow-none hover:rotate-6">
+                    <span class="material-symbols-outlined text-[40px] font-black">pause</span>
+                </button>
+            </div>
+            <div class="pointer-events-none relative flex grow items-end justify-center pb-24">
+                <div
+                    class="hidden absolute bottom-52 right-1/4 animate-[pop_0.6s_cubic-bezier(0.34,1.56,0.64,1)_forwards] z-30">
+                    <h1
+                        class="font-display text-7xl font-black italic text-kitchen-primary text-stroke-white drop-shadow-lg tracking-tight rotate-12">
+                        +10
+                    </h1>
+                </div>
+                <div
+                    class="hidden absolute bottom-72 left-1/3 animate-[pop_0.8s_ease-out_0.2s_forwards] opacity-0 z-30">
+                    <div
+                        class="bg-kitchen-accent text-white px-8 py-3 rounded-full -rotate-6 cartoon-border-light shadow-xl">
+                        <h1 class="font-display text-4xl font-black tracking-wide uppercase drop-shadow-md">
+                            Perfect!
+                        </h1>
+                    </div>
+                </div>
+                <!-- UI elements removed as requested -->
+            </div>
+        </div>
+
+        <!-- PAUSE OVERLAY (Hidden by default) -->
+        <div id="pause-overlay" class="absolute inset-0 z-50 flex flex-col items-center justify-center hidden">
+            <!-- Blur Backdrop -->
+            <div class="absolute inset-0 bg-white/30 backdrop-blur-md"></div>
+
+            <!-- Content Container -->
+            <div class="relative z-20 w-full max-w-sm px-6 flex flex-col items-center gap-6">
+                <!-- Header -->
+                <div class="flex flex-col items-center animate-bounce-soft">
+                    <div class="bg-white p-4 rounded-full mb-3 shadow-sm ring-4 ring-orange-100">
+                        <span class="material-symbols-outlined text-kitchen-primary text-[48px] font-bold">pause</span>
+                    </div>
+                    <h2
+                        class="text-[#5D4037] text-[36px] font-black leading-tight tracking-tight text-center drop-shadow-sm">
+                        暫停一下
+                    </h2>
+                    <p class="text-[#8D6E63] text-lg font-medium leading-normal text-center mt-1">
+                        休息是為了接更多飯糰！
+                    </p>
+                </div>
+
+                <!-- Buttons -->
+                <div class="w-full flex flex-col gap-4 mt-2">
+                    <!-- Resume -->
+                    <button id="resume-btn"
+                        class="group relative w-full cursor-pointer flex items-center justify-between overflow-hidden rounded-full h-20 px-2 bg-kitchen-primary hover:bg-[#FF9E40] active:scale-[0.96] transition-all shadow-[0_6px_0_#c2410c] border-b-0 border-black/5 active:translate-y-[4px] active:shadow-none">
+                        <div
+                            class="size-16 bg-white/25 rounded-full flex items-center justify-center ml-1 group-hover:bg-white/40 transition-colors">
+                            <span
+                                class="material-symbols-outlined text-white text-[40px] drop-shadow-sm">play_arrow</span>
+                        </div>
+                        <span
+                            class="flex-1 text-center text-white text-2xl font-black tracking-wider mr-8 drop-shadow-md">繼續</span>
+                    </button>
+
+                    <!-- Restart -->
+                    <button onclick="window.location.reload()"
+                        class="group relative w-full cursor-pointer flex items-center justify-between overflow-hidden rounded-full h-20 px-2 bg-[#67e8f9] hover:bg-[#22d3ee] active:scale-[0.96] transition-all shadow-[0_6px_0_#0891b2] border-b-0 border-black/5 active:translate-y-[4px] active:shadow-none">
+                        <div
+                            class="size-16 bg-white/40 rounded-full flex items-center justify-center ml-1 group-hover:bg-white/60 transition-colors">
+                            <span class="material-symbols-outlined text-[#5D4037] text-[40px]">replay</span>
+                        </div>
+                        <span
+                            class="flex-1 text-center text-[#5D4037] text-2xl font-black tracking-wider mr-8">重新開始</span>
+                    </button>
+
+                    <!-- Home -->
+                    <button onclick="window.location.href='start.html'"
+                        class="group relative w-full cursor-pointer flex items-center justify-between overflow-hidden rounded-full h-20 px-2 bg-[#fda4af] hover:bg-[#fb7185] active:scale-[0.96] transition-all shadow-[0_6px_0_#e11d48] border-b-0 border-black/5 active:translate-y-[4px] active:shadow-none">
+                        <div
+                            class="size-16 bg-white/40 rounded-full flex items-center justify-center ml-1 group-hover:bg-white/60 transition-colors">
+                            <span class="material-symbols-outlined text-[#5D4037] text-[40px]">home</span>
+                        </div>
+                        <span
+                            class="flex-1 text-center text-[#5D4037] text-2xl font-black tracking-wider mr-8">退出</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
