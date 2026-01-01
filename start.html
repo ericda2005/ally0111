@@ -142,10 +142,39 @@
 
         <div class="relative z-20 w-full px-6 py-4 flex justify-between items-center">
 
-            <button
+            <button id="volume-btn"
                 class="w-12 h-12 flex items-center justify-center rounded-full bg-white hover:bg-white/90 shadow-cartoon active:translate-y-[3px] active:shadow-none transition-all border-2 border-kid-brown/10">
-                <span class="material-symbols-outlined text-kid-brown text-[28px]">settings</span>
+                <span id="volume-icon" class="material-symbols-outlined text-kid-brown text-[28px]">volume_up</span>
             </button>
+            <script>
+                const volBtn = document.getElementById('volume-btn');
+                const volIcon = document.getElementById('volume-icon');
+
+                // Init state
+                let isMuted = localStorage.getItem('isMuted') === 'true';
+                updateIcon();
+
+                volBtn.addEventListener('click', () => {
+                    isMuted = !isMuted;
+                    localStorage.setItem('isMuted', isMuted);
+                    updateIcon();
+
+                    // Optional: Play a test sound if unmuting? 
+                    // No, kept simple as requested.
+                });
+
+                function updateIcon() {
+                    if (isMuted) {
+                        volIcon.innerText = 'volume_off';
+                        volIcon.classList.add('text-gray-400');
+                        volIcon.classList.remove('text-kid-brown');
+                    } else {
+                        volIcon.innerText = 'volume_up';
+                        volIcon.classList.remove('text-gray-400');
+                        volIcon.classList.add('text-kid-brown');
+                    }
+                }
+            </script>
         </div>
         <div class="relative z-20 flex-1 flex flex-col justify-between pb-4 px-6 w-full max-w-md mx-auto">
             <div class="mt-2 text-center relative">

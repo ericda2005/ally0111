@@ -137,50 +137,58 @@
         <div
             class="glass-panel w-[90%] max-w-sm mx-auto h-auto rounded-3xl flex flex-col items-center p-6 relative z-10 animate-pop border-4 border-white/90">
 
-            <div class="w-full flex flex-col items-center -mt-8 mb-2">
+            <div class="w-full flex flex-col items-center -mt-8 mb-1">
                 <h1
-                    class="text-4xl md:text-6xl font-black text-kid-orange text-stroke-brown tracking-wider mb-2 rotate-[-2deg] drop-shadow-md">
+                    class="text-4xl md:text-6xl font-black text-kid-orange text-stroke-brown tracking-wider mb-1 rotate-[-2deg] drop-shadow-md">
                     遊戲結束！
                 </h1>
 
-                <!-- 3D Model Container -->
-                <div class="relative w-full flex flex-col items-center justify-center mb-4">
-                    <div id="model-container" class="w-[220px] h-[180px] flex items-center justify-center">
-                        <!-- 3D Canvas will be injected here -->
-                    </div>
+                <!-- Score Section -->
+                <div class="flex items-baseline gap-2 mb-2">
+                    <span class="text-kid-brown text-lg font-bold">本次得分:</span>
+                    <h2 id="final-score"
+                        class="text-4xl md:text-5xl font-black leading-none text-kitchen-primary text-stroke-brown drop-shadow-sm tracking-tighter">
+                        0
+                    </h2>
                 </div>
 
-                <!-- Score Section -->
-                <div
-                    class="bg-white/80 rounded-2xl px-6 py-2 border-[3px] border-kid-brown shadow-sm transform rotate-1 mb-2">
-                    <p class="text-kid-brown text-lg font-bold text-center">本次得分</p>
+                <!-- Middle Section: Left Stat + Model + Right Stat -->
+                <div class="w-full flex items-center justify-center gap-4 mb-2">
+
+                    <!-- Left Stat: Caught -->
+                    <div class="flex flex-col items-center justify-center shrink-0 -mr-2 rotate-[-5deg]">
+                        <span class="text-kid-brown text-xs font-bold mb-1">接住</span>
+                        <span id="caught-count"
+                            class="text-[#F57F17] tracking-tight text-3xl font-black drop-shadow-sm">0</span>
+                    </div>
+
+                    <!-- 3D Model Container -->
+                    <div class="relative flex flex-col items-center justify-center z-0">
+                        <div id="model-container" class="w-[180px] h-[140px] flex items-center justify-center">
+                            <!-- 3D Canvas will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Right Stat: Combo -->
+                    <div class="flex flex-col items-center justify-center shrink-0 -ml-2 rotate-[5deg]">
+                        <span class="text-kid-brown text-xs font-bold mb-1">連擊</span>
+                        <span id="combo-count"
+                            class="text-[#0277BD] tracking-tight text-3xl font-black drop-shadow-sm">0x</span>
+                    </div>
                 </div>
-                <!-- Static Score for now, ideally passed via URL params -->
-                <h2 id="final-score"
-                    class="text-5xl md:text-7xl font-black leading-none text-center text-kitchen-primary text-stroke-brown drop-shadow-sm mb-3 tracking-tighter">
-                    0
-                </h2>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="w-full grid grid-cols-2 gap-3 mb-6 px-2">
+            <!-- Culture Card (Expanded range) -->
+            <div
+                class="w-full flex-grow bg-[#FFF8E1] border-[3px] border-[#8D6E63] rounded-xl p-4 mb-3 relative shadow-md mt-1 flex flex-col justify-center min-h-[140px]">
                 <div
-                    class="flex flex-col items-center justify-center gap-1 rounded-2xl p-2 bg-kitchen-cream border-2 border-[#FDD835] shadow-sm">
-                    <div class="flex items-center gap-1 text-[#FBC02D] mb-1">
-                        <span class="material-symbols-outlined text-[28px]"
-                            style="font-variation-settings: 'FILL' 1;">rice_bowl</span>
-                    </div>
-                    <p class="text-kid-brown text-xs font-bold">接住飯糰</p>
-                    <p id="caught-count" class="text-[#F57F17] tracking-tight text-2xl font-black">0</p>
+                    class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8D6E63] text-white px-4 py-1 rounded-full text-sm font-bold flex items-center gap-1 shadow-sm whitespace-nowrap">
+                    <span class="material-symbols-outlined text-[16px]">lightbulb</span>
+                    文化知識小卡
                 </div>
-                <div
-                    class="flex flex-col items-center justify-center gap-1 rounded-2xl p-2 bg-[#E1F5FE] border-2 border-[#81D4FA] shadow-sm">
-                    <div class="flex items-center gap-1 text-[#039BE5] mb-1">
-                        <span class="material-symbols-outlined text-[28px]"
-                            style="font-variation-settings: 'FILL' 1;">bolt</span>
-                    </div>
-                    <p class="text-kid-brown text-xs font-bold">連擊次數</p>
-                    <p id="combo-count" class="text-[#0277BD] tracking-tight text-2xl font-black">0x</p>
+                <div id="culture-card-content" class="mt-2 text-center h-full flex flex-col justify-center">
+                    <h3 id="culture-q" class="font-bold text-kid-brown text-lg mb-2 leading-tight">題目讀取中...</h3>
+                    <p id="culture-a" class="text-sm text-[#5D4037] leading-relaxed text-justify px-2">答案讀取中...</p>
                 </div>
             </div>
 
@@ -327,6 +335,27 @@
         }
         if (combo) {
             document.getElementById('combo-count').innerText = combo + 'x';
+        }
+
+        // Culture Card Logic
+        const cultureCards = [
+            { q: "為什麼御飯糰通常是三角形的？", a: "這是為了模仿「山」的形狀。古代日本人相信山上有神明，製作成山的形狀是為了祈求神明的保護。" },
+            { q: "為什麼傳統飯糰中間會包酸梅？", a: "因為酸梅含有特殊的成分（酸度高），具有防腐的作用，可以讓飯糰在夏天比較不容易腐壞。" },
+            { q: "「御飯糰」這個名字是怎麼來的？", a: "日文的「Onigiri」源自於「用力捏壓」這個動作。必須利用雙手的壓力，將米飯緊緊捏合，才能做出好吃的飯糰。" },
+            { q: "為什麼飯糰外面要包一片海苔？", a: "除了增加風味，最主要的功能是為了方便拿取。乾燥的海苔可以隔絕米飯的黏性，讓手保持乾淨。" },
+            { q: "任何一種米都可以做御飯糰嗎？", a: "必須使用黏性較高的米（如日本米）。如果米飯不夠黏，捏出來的飯糰鬆開後會散掉，無法成形。" },
+            { q: "製作飯糰前，為什麼手掌要沾鹽水？", a: "鹽巴有殺菌的效果，能保持衛生；同時鹽水也能避免米飯黏在手上，並讓飯糰表面帶有淡淡的鹹味。" }
+        ];
+
+        // Randomly select one
+        const randomCard = cultureCards[Math.floor(Math.random() * cultureCards.length)];
+
+        // Update DOM
+        const qEl = document.getElementById('culture-q');
+        const aEl = document.getElementById('culture-a');
+        if (qEl && aEl) {
+            qEl.innerText = randomCard.q;
+            aEl.innerText = randomCard.a;
         }
     </script>
 </body>

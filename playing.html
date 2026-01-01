@@ -333,7 +333,7 @@
             const maxFallingItems = isChallenge ? 3 : 2;
             const spawnIntervalTime = isChallenge ? 500 : 1500;
 
-            fallingFiles.forEach((fileInfo) => {
+            fallingFiles.forEach((fileInfo, index) => {
                 // IMPORTANT: Create FRESH loaders for EACH iteration
                 // to prevent race conditions where setMaterials overwrites others
                 const mtlLoader = new MTLLoader();
@@ -363,6 +363,9 @@
                         const wrapper = new THREE.Group();
                         wrapper.add(object);
 
+                        // Store TYPE based on original index, NOT load order
+                        wrapper.userData.typeId = index;
+
                         loadedPrefabs.push(wrapper);
                     }, (xhr) => {
                         // obj progress
@@ -375,7 +378,8 @@
             function spawnFallingItem() {
                 if (loadedPrefabs.length === 0) return;
 
-                const prefab = loadedPrefabs[Math.floor(Math.random() * loadedPrefabs.length)];
+                const prefabIdx = Math.floor(Math.random() * loadedPrefabs.length);
+                const prefab = loadedPrefabs[prefabIdx];
                 const item = prefab.clone();
 
                 // Random X position
@@ -399,7 +403,9 @@
 
                 fallingItems.push({
                     mesh: item,
+                    type: item.userData.typeId, // Use fixed type from userData
                     speed: baseSpeed + Math.random() * randSpeed,
+
                     rotSpeedX: (Math.random() - 0.5) * 0.05,
                     rotSpeedZ: (Math.random() - 0.5) * 0.05
                 });
@@ -439,7 +445,112 @@
                 }
             }, 1000);
 
-            // Pause Button Logic
+            // Sound Manager (Web Audio API)
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const pauseMuteBtn = document.getElementById('pause-mute-toggle');
+
+            // Sync with Global Mute State
+            function updatePauseMuteText() {
+                const isMuted = localStorage.getItem('isMuted') === 'true';
+                if (pauseMuteBtn) {
+                    pauseMuteBtn.innerText = isMuted ? "開啟音效" : "關閉音效";
+                    // Visual cue: Strikethrough if off? Or just text. User asked for simple text.
+                    pauseMuteBtn.style.textDecoration = isMuted ? "line-through" : "none";
+                }
+            }
+
+            // Init on load
+            updatePauseMuteText();
+
+            if (pauseMuteBtn) {
+                pauseMuteBtn.addEventListener('click', () => {
+                    const isMuted = localStorage.getItem('isMuted') === 'true';
+                    const newState = !isMuted;
+                    localStorage.setItem('isMuted', newState);
+                    updatePauseMuteText();
+                });
+            }
+
+            function playSound(type) {
+                // Check Global Mute (Directly from Storage for consistency)
+                if (localStorage.getItem('isMuted') === 'true') return;
+
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                // 4 Distinct & Clear Sounds
+                // Louder gain (0.4 - 0.5)
+                switch (type) {
+                    case 0: // "Ding" (Clean Bell)
+                        oscillator.type = 'sine';
+                        // Static high pitch (High C), no sliding
+                        oscillator.frequency.setValueAtTime(1046, now);
+
+                        gainNode.gain.setValueAtTime(0.3, now); // Softer volume
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.6); // Long ring
+
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.6);
+                        break;
+
+                    case 1: // "Tok" (Wooden Block/Drum)
+                        oscillator.type = 'triangle';
+                        // Higher pitch, snappy (300 -> 500)
+                        oscillator.frequency.setValueAtTime(500, now);
+                        oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+
+                        gainNode.gain.setValueAtTime(0.8, now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.1);
+                        break;
+
+                    case 2: // "Bloop" (Puh/Bubble)
+                        oscillator.type = 'sine';
+                        // Pitch drop 600 -> 300 Hz rapidly
+                        oscillator.frequency.setValueAtTime(600, now);
+                        oscillator.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+
+                        gainNode.gain.setValueAtTime(0.5, now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.1);
+                        break;
+
+                    case 3: // "Tack" (Sharp Woodblock)
+                        oscillator.type = 'triangle'; // Richer than sine
+                        // Static 800Hz
+                        oscillator.frequency.setValueAtTime(800, now);
+
+                        gainNode.gain.setValueAtTime(0.5, now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2); // Longer decay (0.1 -> 0.2)
+
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.2);
+                        break;
+
+                    default: // Fallback
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(440, now);
+                        gainNode.gain.setValueAtTime(0.3, now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.2);
+                }
+            }
+
+            // Resume Button Logic
             document.getElementById('pause-btn').addEventListener('click', () => {
                 isPaused = true;
                 pauseOverlay.classList.remove('hidden');
@@ -449,6 +560,8 @@
             document.getElementById('resume-btn').addEventListener('click', () => {
                 isPaused = false;
                 pauseOverlay.classList.add('hidden');
+                // Try resume audio context on user interaction
+                if (audioCtx.state === 'suspended') audioCtx.resume();
             });
 
             let lastSpawnTime = 0;
@@ -526,8 +639,7 @@
                                 score += totalHitScore;
 
                                 scoreDisplay.innerText = score;
-                                scoreSound.currentTime = 0;
-                                scoreSound.play().catch(e => console.log('Audio play failed', e));
+                                playSound(item.type);
 
                                 // Visual Combo Effect
                                 if (currentCombo > 0) {
@@ -701,6 +813,12 @@
                             class="flex-1 text-center text-[#5D4037] text-2xl font-black tracking-wider mr-8">退出</span>
                     </button>
                 </div>
+
+                <!-- Sound Toggle (Simple Text) -->
+                <button id="pause-mute-toggle"
+                    class="mt-2 text-[#8D6E63] text-xl font-bold opacity-70 hover:opacity-100 transition-opacity">
+                    開啟音效
+                </button>
             </div>
         </div>
     </div>
