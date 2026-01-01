@@ -382,9 +382,21 @@
                 const prefab = loadedPrefabs[prefabIdx];
                 const item = prefab.clone();
 
+                // Responsive Values
+                const isMobile = window.innerWidth < 768;
+                const spawnXRange = isMobile ? 9 : 14;
+                // Mobile: Narrower range (-4.5 to 4.5) to keep inside screen
+                // Desktop: Wide range (-7 to 7)
+
+                const mobileScaleMod = isMobile ? 0.85 : 1.0;
+                // Slightly smaller on mobile to avoid overcrowding
+
                 // Random X position
-                const xPos = (Math.random() - 0.5) * 16;
+                const xPos = (Math.random() - 0.5) * spawnXRange;
                 item.position.set(xPos, 15, 0);
+
+                // Apply Responsive Scale
+                item.scale.multiplyScalar(mobileScaleMod);
 
                 // Random Rotation
                 item.rotation.z = Math.random() * Math.PI;
